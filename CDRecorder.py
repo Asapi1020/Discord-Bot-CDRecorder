@@ -9,13 +9,13 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
 
-ServerHost = "http://133.18.226.155"
+ServerHost = ""
 port = ["8080", "8081"]
 port_game = ["7777", "7778"]
-user = ""
+user = "admin"
 pw = ""
 token = ''
-KFPath = 'C:\Program Files (x86)\Steam\steamapps\common\killingfloor2'
+KFPath = 'D:\Steam\steamapps\common\killingfloor2'
 ChromePath = 'D:\Downloads\ChromeDriver\chromedriver.exe'
 
 EmbedColor = 0x00ff00
@@ -55,8 +55,11 @@ def ExtractWeb(url, selector):
 def GetUserName(ID):
     ID3 = "U:" + str(ID%2) + ":" + str(ID)
     url = FinderPage + "/lookup/U%3A" + str(ID%2) + "%3A" + str(ID) + "/"
-    selector = 'body > div.container.wrapper > div.row > div.content.col-md-12 > div > div.col-md-12.header > div > h1 > a'
-    name = ExtractWeb(url, selector).contents[0].replace(" Steam ID", "")
+    # selector = 'body > div.container.wrapper > div.row > div.content.col-md-12 > div > div.col-md-12.header > div > h1 > a'
+    # name = ExtractWeb(url, selector).contents[0].replace(" Steam ID", "")
+    res = requests.get(url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    name = soup.find("div", class_="profile-bar").h1.string.replace(" Steam ID", "")
     return name
 
 
@@ -401,6 +404,8 @@ async def ReloadRecord(channel):
     # Reference New Records
     count = 0
     for each_port in port:
+        if each_port == "8081":
+            continue
         records = ReferenceBoard(driver, each_port)
         idx = CheckLog(each_port, records)
         
